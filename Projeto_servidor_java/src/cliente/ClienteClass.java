@@ -25,7 +25,7 @@ public class ClienteClass implements Serializable{
     */
     public ClienteClass() {
         this.porta  = 12345;
-        this.enderecoIp = "127.0.0.1";
+        this.enderecoIp = "192.168.2.111";
         try{
         System.out.println("Iniciando conexão do cliente ...");
         this.cliente = new Socket(enderecoIp , porta);
@@ -76,10 +76,20 @@ public class ClienteClass implements Serializable{
             
         }
     }
-      
-
+    
+      public void RecebeResultado() throws IOException{
+       Scanner lerResultado = new Scanner(cliente.getInputStream());
+       String resultado = lerResultado.nextLine();           
+        while(resultado.equals("false")){
+            this.Login();
+          }
+        this.Mensagem();
+          
+      }
+    /*ler login e senha do usuario depois recebe o resultado do servidor 
+      indicando se o login é valido ou nao*/ 
     public void Login() throws IOException{
-        //ler login e senha do usuario
+            
         Scanner ler = new Scanner(System.in);
         System.out.println("Login: ");        
         this.setLogin(ler.nextLine());
@@ -89,7 +99,10 @@ public class ClienteClass implements Serializable{
         System.out.println("Senha:");        
         this.setSenha(ler.nextLine()); 
         PrintStream saida2 = new PrintStream(cliente.getOutputStream());
-        saida2.println(this.getSenha());        
+        saida2.println(this.getSenha());   
+        
+        this.RecebeResultado();
+     
     }
     
     
@@ -108,8 +121,7 @@ public class ClienteClass implements Serializable{
     public static void main (String arg[]) throws IOException  {
      
        ClienteClass cliente = new ClienteClass();
-       cliente.Login();
-       cliente.Mensagem();
+       cliente.Login();             
        cliente.FechaConexao();
         
     

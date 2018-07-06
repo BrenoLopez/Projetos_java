@@ -2,6 +2,7 @@
     package servidor;
 
 
+import java.io.PrintStream;
 import java.net.*;
 import java.util.Scanner;
 
@@ -64,22 +65,37 @@ import java.util.Scanner;
         
         }
 
-        //recebe os dados de login e valida 
-         public void ValidaLogin(){
+        /*recebe os dados de login e valida 
+          após validar as informações de login retorna um resultado para que
+          o metodo do servidor dê permissões ao cliente
+        */
+         public String ValidaLogin(){
+            
+             String resultado = null;
                    try{
                 Scanner ler = new Scanner(cliente.getInputStream());
                 String entrada = ler.nextLine();
-                String entrada2 = ler.nextLine();
-                if(entrada.equals(this.loginServ)&&entrada2.equals(this.senhaServ)){
-                System.out.println("Login autenticado com sucesso!");
-                this.RecebeMensagem();
+                String entrada2 = ler.nextLine();                
+                
+                
+                if(entrada.equals(this.loginServ)&&entrada2.equals(this.senhaServ)){  
+
+                    resultado = "true";  
+                    PrintStream saida = new PrintStream(cliente.getOutputStream());
+                    saida.println(resultado);                    
+                    this.RecebeMensagem();
+                }    
+                else{
+                    resultado = "false";                      
+                    PrintStream saida = new PrintStream(cliente.getOutputStream());
+                    saida.println(resultado);                    
+                    this.ValidaLogin();
                 }
-                else 
-                    servidor.close();
+               
           }catch(Exception e){
-              e.printStackTrace();
-              
+              e.printStackTrace();              
           }
+                   return resultado;
          }
          
         
